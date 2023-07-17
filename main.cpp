@@ -2,17 +2,15 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
 typedef int tImage[1000][1000];
 
-string error;
+std::string error;
 
-int loadPGM(string name, tImage img, int *lin, int *col, int *tone)
+int loadPGM(std::string name, tImage img, int *lin, int *col, int *tone)
 {
 
-    string type;
-    ifstream file(name);
+    std::string type;
+    std::ifstream file(name);
     if (!file.is_open())
     {
         error = "Erro: Arquivo não encontrado.";
@@ -38,25 +36,25 @@ int loadPGM(string name, tImage img, int *lin, int *col, int *tone)
     return 0;
 }
 
-int savePGM(string name, tImage img, int lin, int col, int tone)
+int savePGM(std::string name, tImage img, int lin, int col, int tone)
 {
-    ofstream file(name);
+    std::ofstream file(name);
     if (!file.is_open())
     {
         error = "Erro: Arquivo não encontrado.";
         return 1;
     }
 
-    file << "P2" << endl
-         << col << " " << lin << endl
-         << tone << endl;
+    file << "P2" << std::endl
+         << col << " " << lin << std::endl
+         << tone << std::endl;
     for (int i = 0; i < lin; i++)
     {
         for (int j = 0; j < col; j++)
         {
             file << img[i][j] << " ";
         }
-        file << endl;
+        file << std::endl;
     }
 
     file.close();
@@ -70,15 +68,15 @@ int main(int argc, char **argv)
 {
     tImage input_img, output_img;
     int columns = 10, lines = 10, tone;
-    string input_file, output_file;
+    std::string input_file, output_file;
 
     // Leitura do arquivo de entrada da imagem.
-    cout << " Entre com o nome da imagem de entrada: ";
-    cin >> input_file;
+    std::cout << " Entre com o nome da imagem de entrada: ";
+    std::cin >> input_file;
     input_file = input_file + ".pgm";
     if (loadPGM(input_file, input_img, &lines, &columns, &tone) != 0)
     {
-        cout << "\n" + error + "\n";
+        std::cout << "\n" + error + "\n";
         return 1;
     }
 
@@ -92,12 +90,12 @@ int main(int argc, char **argv)
     }
 
     // Escrita do arquivo de saída da imagem.
-    cout << " Entre com o nome da imagem de saída: ";
-    cin >> output_file;
+    std::cout << " Entre com o nome da imagem de saída: ";
+    std::cin >> output_file;
     output_file = output_file + ".pgm";
     if (savePGM(output_file, output_img, columns, lines, tone) != 0)
     {
-        cout << "\n" + error + "\n";
+        std::cout << "\n" + error + "\n";
         return 1;
     }
 
