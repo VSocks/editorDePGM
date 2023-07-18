@@ -64,7 +64,7 @@ int savePGM(std::string name, tImage img, int lin, int col, int tone)
 /*
  * Leitura e Escrita de arquivos no formato PGM com funções.
  */
-int main(int argc, char **argv)
+int main()
 {
     tImage input_img, output_img;
     int columns = 10, lines = 10, tone;
