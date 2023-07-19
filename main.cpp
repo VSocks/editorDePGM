@@ -61,39 +61,73 @@ int savePGM(std::string name, tImage img, int lin, int col, int tone)
     return 0;
 }
 
-/*
- * Leitura e Escrita de arquivos no formato PGM com funções.
- */
-int main()
+void rotate(tImage img, int *lin, int *col)
 {
-    tImage input_img, output_img;
-    int columns = 10, lines = 10, tone;
-    std::string input_file, output_file;
-
-    // Leitura do arquivo de entrada da imagem.
-    std::cout << " Entre com o nome da imagem de entrada: ";
-    std::cin >> input_file;
-    input_file = input_file + ".pgm";
-    if (loadPGM(input_file, input_img, &lines, &columns, &tone) != 0)
+    for (int i = 0; i < *lin; i++)
     {
-        std::cout << "\n" + error + "\n";
-        return 1;
+        for (int j = 0; j < *col; j++)
+        {
+            std::swap(img[i][j], img[j][i]);
+        }
     }
+}
 
-    // Construindo a imagem negativa.
+/*    // Construindo a imagem negativa.
     for (int i = 0; i < lines; i++)
     {
         for (int j = 0; j < columns; j++)
         {
             input_img[j][i] = tone - output_img[i][j];
         }
+    }*/
+
+/*
+ * Leitura e Escrita de arquivos no formato PGM com funções.
+ */
+int main()
+{
+    tImage image;
+    int columns, lines, tone, option;
+    std::string input_file, output_file;
+
+    // Leitura do arquivo de entrada da imagem.
+    std::cout << " Entre com o nome da imagem de entrada: ";
+    std::cin >> input_file;
+    input_file += ".pgm";
+
+    if (loadPGM(input_file, image, &lines, &columns, &tone) != 0)
+    {
+        std::cout << "\n" + error + "\n";
+        return 1;
+    }
+
+    std::cout << "O que quer fazer com a imagem?" << std::endl
+              << std::endl
+              << "1-Rotacionar a imagem" << std::endl
+              << "2-Binarizar a imagem" << std::endl
+              << "3-Iconizar a imagem" << std::endl
+              << "4-Aplicar filtro passa-baida" << std::endl;
+    std::cin >> option;
+
+    switch(option)
+    {
+        case 1: rotate(image, &lines, &columns);
+        break;
+        case 2:
+        break;
+        case 3:
+        break;
+        case 4:
+        break;
+        default:
+        break;
     }
 
     // Escrita do arquivo de saída da imagem.
     std::cout << " Entre com o nome da imagem de saída: ";
     std::cin >> output_file;
     output_file = output_file + ".pgm";
-    if (savePGM(output_file, output_img, columns, lines, tone) != 0)
+    if (savePGM(output_file, image, columns, lines, tone) != 0)
     {
         std::cout << "\n" + error + "\n";
         return 1;
