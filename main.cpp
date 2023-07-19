@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 typedef int tImage[1000][1000];
 
@@ -66,6 +67,7 @@ int savePGM(std::string name, tImage img, int lin, int col, int tone)
  */
 int main()
 {
+
     tImage input_img, output_img;
     int columns = 10, lines = 10, tone;
     std::string input_file, output_file;
