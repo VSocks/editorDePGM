@@ -29,12 +29,8 @@ int loadPGM(std::string name, tImage iImg, int *lin, int *col, int *tone)
 
     file >> *col >> *lin >> *tone;
     for (int i = 0; i < *lin; i++)
-    {
         for (int j = 0; j < *col; j++)
-        {
             file >> iImg[i][j];
-        }
-    }
     file.close();
     return 0;
 }
@@ -55,9 +51,7 @@ int savePGM(std::string name, tImage oImg, int lin, int col, int tone)
     for (int i = 0; i < lin; i++)
     {
         for (int j = 0; j < col; j++)
-        {
             file << oImg[i][j] << " ";
-        }
         file << std::endl;
     }
 
@@ -74,22 +68,14 @@ void rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir)
     {
     case 0: // Roda os valores da matriz 90 graus à esquerda
         for (int i = 0; i < *col; i++)
-        {
             for (int j = 0; j < *lin; j++)
-            {
                 oImg[i][j] = iImg[j][*col - i];
-            }
-        }
         break;
 
     case 1: // Roda os valores da matriz 90 graus à direita
         for (int i = 0; i < *col; i++)
-        {
             for (int j = 0; j < *lin; j++)
-            {
                 oImg[i][j] = iImg[*lin - j][i];
-            }
-        }
         break;
 
     default:
@@ -106,19 +92,11 @@ void rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir)
 void binarize(tImage iImg, tImage oImg, int *lin, int *col, int dsr_tone)
 {
     for (int i = 0; i < *lin; i++)
-    {
         for (int j = 0; j < *col; j++)
-        {
             if (iImg[i][j] < dsr_tone)
-            {
                 oImg[i][j] = 0;
-            }
             else
-            {
                 oImg[i][j] = 255;
-            }
-        }
-    }
 }
 
 void iconize()
@@ -133,51 +111,27 @@ void smooth()
 void negative(tImage iImg, tImage oImg, int *lin, int *col, int *tone)
 {
     for (int i = 0; i < *lin; i++)
-    {
         for (int j = 0; j < *col; j++)
-        {
             oImg[i][j] = *tone - iImg[i][j];
-        }
-    }
 }
 
 // Esclarese ou escurece a imagem de acordo com o que o usuário especifica
 void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade)
 {
     if (shade < 0)
-    {
         for (int i = 0; i < *lin; i++)
-        {
             for (int j = 0; j < *col; j++)
-            {
                 if (iImg[i][j] + shade < 0)
-                {
                     oImg[i][j] = 0;
-                }
                 else
-                {
                     oImg[i][j] = iImg[i][j] + shade;
-                }
-            }
-        }
-    }
     else
-    {
         for (int i = 0; i < *lin; i++)
-        {
             for (int j = 0; j < *col; j++)
-            {
                 if (iImg[i][j] + shade > 255)
-                {
                     oImg[i][j] = 255;
-                }
                 else
-                {
                     oImg[i][j] = iImg[i][j] + shade;
-                }
-            }
-        }
-    }
 }
 
 /*
@@ -187,12 +141,8 @@ void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade)
 void copy(tImage iImg, tImage oImg, int *lin, int *col)
 {
     for (int i = 0; i < *lin; i++)
-    {
         for (int j = 0; j < *col; j++)
-        {
             oImg[i][j] = iImg[i][j];
-        }
-    }
 }
 
 /*
