@@ -95,6 +95,7 @@ void rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir)
     default:
         break;
     }
+    std::swap(*lin,*col);
 }
 
 /*
@@ -234,7 +235,7 @@ int main()
               << " Entre com o nome da imagem de saída: ";
     std::cin >> output_file;
     output_file = output_file + ".pgm";
-    if (savePGM(output_file, output_image, columns, lines, tone) != 0)
+    if (savePGM(output_file, output_image, lines, columns, tone) != 0)
     {
         std::cout << "\n" + error + "\n";
         return 1;
