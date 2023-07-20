@@ -6,9 +6,12 @@ typedef int tImage[1000][1000];
 
 std::string error;
 
-int loadPGM(std::string name, tImage img, int *lin, int *col, int *tone)
+/*
+ * Cria matriz "imagem input" com os valores do arquivo de entrada
+ * esse arquivo será então processado para formar a matriz "imagem output"
+ */
+int loadPGM(std::string name, tImage iImg, int *lin, int *col, int *tone)
 {
-
     std::string type;
     std::ifstream file(name);
     if (!file.is_open())
@@ -26,17 +29,14 @@ int loadPGM(std::string name, tImage img, int *lin, int *col, int *tone)
 
     file >> *col >> *lin >> *tone;
     for (int i = 0; i < *lin; i++)
-    {
         for (int j = 0; j < *col; j++)
-        {
-            file >> img[i][j];
-        }
-    }
+            file >> iImg[i][j];
     file.close();
     return 0;
 }
 
-int savePGM(std::string name, tImage img, int lin, int col, int tone)
+// Cria arquivo pgm baseado na matriz "imagem output"
+int savePGM(std::string name, tImage oImg, int lin, int col, int tone)
 {
     std::ofstream file(name);
     if (!file.is_open())
@@ -51,61 +51,122 @@ int savePGM(std::string name, tImage img, int lin, int col, int tone)
     for (int i = 0; i < lin; i++)
     {
         for (int j = 0; j < col; j++)
-        {
-            file << img[i][j] << " ";
-        }
+            file << oImg[i][j] << " ";
         file << std::endl;
     }
 
     file.close();
     return 0;
 }
-
-void rotate(tImage img, int *lin, int *col)
+/*
+ * Função que rotaciona os valores da matriz imagem input
+ * e coloca suas novas posições na matriz imagen output
+ */
+int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir)
 {
-    int n;
+    switch (dir)
+    {
+    case 0: // Roda os valores da matriz 90 graus à esquerda
+        for (int i = 0; i < *col; i++)
+            for (int j = 0; j < *lin; j++)
+                oImg[i][j] = iImg[j][*col - i];
+        break;
+
+    case 1: // Roda os valores da matriz 90 graus à direita
+        for (int i = 0; i < *col; i++)
+            for (int j = 0; j < *lin; j++)
+                oImg[i][j] = iImg[*lin - j][i];
+        break;
+
+    default:
+        error = "Erro: opção inválida.";
+        return 3;
+    }
+    std::swap(*lin, *col);
+    return 0;
+}
+
+/*
+ * Lê cada valor da imagem input e compara com o valor desejado pelo usuário
+ * para a binarização. Valores maiores são preenchidos por branco na imagem output
+ * enquanto valores menores são preenchidos com preto
+ */
+void binarize(tImage iImg, tImage oImg, int *lin, int *col, int dsr_tone)
+{
     for (int i = 0; i < *lin; i++)
-    {
-        for (int j = 0 + n; j < *col; j++)
-        {
-            std::swap(img[i][j], img[j][i]);
-        }
-    }
-}
-
-void binarize(tImage img, int *lin, int *col)
-{
-    for (int i = 0; i < *col; i++)
-    {
-        for (int j = 0; j < *lin; j++)
-        {
-            if(img[i][j] >= 128)
-            {
-                img[i][j] = 255;
-            }
+        for (int j = 0; j < *col; j++)
+            if (iImg[i][j] < dsr_tone)
+                oImg[i][j] = 0;
             else
-            {
-                img[i][j] = 0;
-            }
-        }
-    }
+                oImg[i][j] = 255;
 }
 
-/*    // Construindo a imagem negativa.
-    for (int i = 0; i < lines; i++)
-    {
-        for (int j = 0; j < columns; j++)
-        {
-            input_img[j][i] = tone - output_img[i][j];
-        }
-    }*/
+/*
+ * Cria um ícone 64x64 da imagem, calculando a cada quantos pixeis de altura
+ * ou comprimento da imagem real um novo píxel da imagem iconizada deve ser escolhido.
+ * Isso acaba "esticando" as proporções de imagens que não são quadradas
+ */
+void iconize(tImage iImg, tImage oImg, int *lin, int *col)
+{
+    int pixelX = *lin / 64;
+    int pixelY = *col / 64;
+    *lin = 64;
+    *col = 64;
+
+    for (int i = 0; i < *lin; i++)
+        for (int j = 0; j < *col; j++)
+            oImg[i][j] = iImg[i * pixelX][j * pixelY];
+}
+
+void smooth()
+{
+}
+
+// Coloca valores invertidos da matriz imagem output na matriz imagem output
+void negative(tImage iImg, tImage oImg, int *lin, int *col, int *tone)
+{
+    for (int i = 0; i < *lin; i++)
+        for (int j = 0; j < *col; j++)
+            oImg[i][j] = *tone - iImg[i][j];
+}
+
+// Esclarese ou escurece a imagem de acordo com o que o usuário especifica
+void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade)
+{
+    if (shade < 0)
+        for (int i = 0; i < *lin; i++)
+            for (int j = 0; j < *col; j++)
+                if (iImg[i][j] + shade < 0)
+                    oImg[i][j] = 0;
+                else
+                    oImg[i][j] = iImg[i][j] + shade;
+    else
+        for (int i = 0; i < *lin; i++)
+            for (int j = 0; j < *col; j++)
+                if (iImg[i][j] + shade > 255)
+                    oImg[i][j] = 255;
+                else
+                    oImg[i][j] = iImg[i][j] + shade;
+}
+
+/*
+ * Cria a matriz imagem output baseado na imagem input sem modificações
+ * Usado para checar se o programa está lendo arquivos corretamente
+ */
+void copy(tImage iImg, tImage oImg, int *lin, int *col)
+{
+    for (int i = 0; i < *lin; i++)
+        for (int j = 0; j < *col; j++)
+            oImg[i][j] = iImg[i][j];
+}
 
 /*
  * Leitura e Escrita de arquivos no formato PGM com funções.
  */
+
 int main()
 {
-    tImage image;
+    tImage input_image, output_image;
     int columns, lines, tone, option;
     std::string input_file, output_file;
 
@@ -114,39 +175,92 @@ int main()
     std::cin >> input_file;
     input_file += ".pgm";
 
-    if (loadPGM(input_file, image, &lines, &columns, &tone) != 0)
+    if (loadPGM(input_file, input_image, &lines, &columns, &tone) != 0)
     {
         std::cout << "\n" + error + "\n";
         return 1;
     }
 
-    std::cout << "O que quer fazer com a imagem?" << std::endl
+    std::cout << std::endl
+              << "O que quer fazer com a imagem?" << std::endl
               << std::endl
-              << "1-Rotacionar a imagem" << std::endl
-              << "2-Binarizar a imagem" << std::endl
-              << "3-Iconizar a imagem" << std::endl
-              << "4-Aplicar filtro passa-baida" << std::endl;
+              << "0-Rotacionar a imagem" << std::endl
+              << "1-Binarizar a imagem" << std::endl
+              << "2-Iconizar a imagem (64x64)" << std::endl
+              << "3-Aplicar filtro passa-baida" << std::endl
+              << "4-Inverter cores da imagem" << std::endl
+              << "5-Escurecer ou clarear a imagem" << std::endl
+              << "6-Copiar a imagem" << std::endl
+              << "Opção: ";
     std::cin >> option;
 
-    switch(option)
+    switch (option)
     {
-        case 1: rotate(image, &lines, &columns);
+    case 0:
+        int direction;
+        std::cout << std::endl
+                  << "Escolha para qual direção rotacionar" << std::endl
+                  << "0-Esquerda" << std::endl
+                  << "1-Direita" << std::endl
+                  << "Opção: ";
+        std::cin >> direction;
+        if (rotate(input_image, output_image, &lines, &columns, direction) != 0)
+        {
+            std::cout << "\n" + error + "\n";
+            return 1;
+        }
         break;
-        case 2: binarize(image, &lines, &columns);
+
+    case 1:
+        int desired_tone;
+        std::cout << std::endl
+                  << "Digite o valor do tom de cinza desejado para binarização, entre 0 e 255" << std::endl
+                  << "Tons de mais baixo valor serão convertidos em preto" << std::endl
+                  << "Tons de igual ou mais alto valor serão convertidos em branco" << std::endl
+                  << "Tom desejado: ";
+        std::cin >> desired_tone;
+        binarize(input_image, output_image, &lines, &columns, desired_tone);
         break;
-        case 3:
+
+    case 2:
+        iconize(input_image, output_image, &lines, &columns);
         break;
-        case 4:
+
+    case 3:
+        smooth();
         break;
-        default:
+
+    case 4:
+        negative(input_image, output_image, &lines, &columns, &tone);
         break;
+
+    case 5:
+        int shading;
+        std::cout << std::endl
+                  << "Digite o valor desejado de tons a escurecer ou clarear a imagem" << std::endl
+                  << "Valores negativos para escurecer, valores positivos para clarear" << std::endl
+                  << "Os tons usados na imagem vão de 0 (preto) a 255 (branco)" << std::endl
+                  << "Mudança desejada: ";
+        std::cin >> shading;
+        shade(input_image, output_image, &lines, &columns, shading);
+        break;
+
+    case 6:
+        copy(input_image, output_image, &lines, &columns);
+        break;
+
+    default:
+        std::cout << std::endl
+                  << "Erro: opção inválida." << std::endl;
+                  return 3;
     }
 
     // Escrita do arquivo de saída da imagem.
-    std::cout << " Entre com o nome da imagem de saída: ";
+    std::cout << std::endl
+              << "Entre com o nome da imagem de saída: ";
     std::cin >> output_file;
-    output_file = output_file + ".pgm";
-    if (savePGM(output_file, image, columns, lines, tone) != 0)
+    output_file += ".pgm";
+    if (savePGM(output_file, output_image, lines, columns, tone) != 0)
     {
         std::cout << "\n" + error + "\n";
         return 1;
