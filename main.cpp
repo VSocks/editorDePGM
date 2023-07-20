@@ -125,6 +125,7 @@ void iconize(tImage iImg, tImage oImg, int *lin, int *col)
     *col = 64;
 }
 
+// Função que aplica filtro passa-baixa
 void smooth(tImage iImg, tImage oImg, int *lin, int *col)
 {
     int matrix[3][3] = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
