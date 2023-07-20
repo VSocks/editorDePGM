@@ -63,11 +63,30 @@ int savePGM(std::string name, tImage img, int lin, int col, int tone)
 
 void rotate(tImage img, int *lin, int *col)
 {
+    int n;
     for (int i = 0; i < *lin; i++)
     {
-        for (int j = 0; j < *col; j++)
+        for (int j = 0 + n; j < *col; j++)
         {
             std::swap(img[i][j], img[j][i]);
+        }
+    }
+}
+
+void binarize(tImage img, int *lin, int *col)
+{
+    for (int i = 0; i < *col; i++)
+    {
+        for (int j = 0; j < *lin; j++)
+        {
+            if(img[i][j] >= 128)
+            {
+                img[i][j] = 255;
+            }
+            else
+            {
+                img[i][j] = 0;
+            }
         }
     }
 }
@@ -113,7 +132,7 @@ int main()
     {
         case 1: rotate(image, &lines, &columns);
         break;
-        case 2:
+        case 2: binarize(image, &lines, &columns);
         break;
         case 3:
         break;
