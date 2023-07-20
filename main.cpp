@@ -125,8 +125,21 @@ void iconize(tImage iImg, tImage oImg, int *lin, int *col)
     *col = 64;
 }
 
-void smooth()
+void smooth(tImage iImg, tImage oImg, int *lin, int *col)
 {
+    int matrix[3][3] = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
+
+    for (int i = 0; i < *lin; i++)
+        for (int j = 0; j < *col; j++)
+        {
+            int sum1 = 0;
+            for (int k = -1; k <= 1; k++)
+            {
+                for (int l = -1; l <= 1; l++)
+                    sum1 += iImg[i + 1][j + l] * matrix[k + 1][l + 1];
+            }
+            oImg[i][j] = sum1 / 9;
+        }
 }
 
 // Coloca valores invertidos da matriz imagem output na matriz imagem output
@@ -267,7 +280,7 @@ int main()
             break;
 
         case 3:
-            smooth();
+            smooth(input_image, output_image, &lines, &columns);
             saveChanges(input_image, output_image, &lines, &columns);
             std::cout << std::endl
                       << "Imagem suavizada com sucesso.";
