@@ -177,17 +177,6 @@ void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade, std::string 
 }
 
 /*
- * Cria a matriz imagem output baseado na imagem input sem modificações
- * Usado para checar se o programa está lendo arquivos corretamente
- */
-void copy(tImage iImg, tImage oImg, int *lin, int *col)
-{
-    for (int i = 0; i < *lin; i++)
-        for (int j = 0; j < *col; j++)
-            oImg[i][j] = iImg[i][j];
-}
-
-/*
  * Salva alterações na imagem de input toda vez que uma alteração for feita na imagem output.
  * Assim é possível fazer várias alterações em sequência, uma vez que nas outras funções as
  * mudanças da imagem de output usam a imagem input como base
@@ -219,7 +208,7 @@ int main()
         std::cout << "\n" + error + "\n";
         return 1;
     }
-    while (option != 7)
+    while (option != 6)
     {
         std::cout << std::endl
                   << "O que quer fazer com a imagem?" << std::endl
@@ -230,8 +219,7 @@ int main()
                   << "3-Aplicar filtro passa-baixa" << std::endl
                   << "4-Inverter cores da imagem" << std::endl
                   << "5-Escurecer ou clarear a imagem" << std::endl
-                  << "6-Copiar a imagem inicial" << std::endl
-                  << "7-Finalizar" << std::endl
+                  << "6-Finalizar" << std::endl
                   << "Opção: ";
         std::cin >> option;
 
@@ -309,10 +297,6 @@ int main()
             break;
 
         case 6:
-            copy(input_image, output_image, &lines, &columns);
-            break;
-
-        case 7:
             // Escrita do arquivo de saída da imagem.
             std::cout << std::endl
                       << "Entre com o nome da imagem de saída: ";
