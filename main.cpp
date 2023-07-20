@@ -141,6 +141,45 @@ void negative(tImage iImg, tImage oImg, int *lin, int *col, int *tone)
     }
 }
 
+// Esclarese ou escurece a imagem de acordo com o que o usuário especifica
+void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade)
+{
+    if (shade < 0)
+    {
+        for (int i = 0; i < *lin; i++)
+        {
+            for (int j = 0; j < *col; j++)
+            {
+                if (iImg[i][j] + shade < 0)
+                {
+                    oImg[i][j] = 0;
+                }
+                else
+                {
+                    oImg[i][j] = iImg[i][j] + shade;
+                }
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < *lin; i++)
+        {
+            for (int j = 0; j < *col; j++)
+            {
+                if (iImg[i][j] + shade > 255)
+                {
+                    oImg[i][j] = 255;
+                }
+                else
+                {
+                    oImg[i][j] = iImg[i][j] + shade;
+                }
+            }
+        }
+    }
+}
+
 /*
  * Cria a matriz imagem output baseado na imagem input sem modificações
  * Usado para checar se o programa está lendo arquivos corretamente
@@ -185,6 +224,7 @@ int main()
               << "2-Iconizar a imagem (64x64)" << std::endl
               << "3-Aplicar filtro passa-baida" << std::endl
               << "4-Inverter cores da imagem" << std::endl
+              << "5-Escurecer ou clarear a imagem" << std::endl
               << "N/a-Copiar a imagem" << std::endl
               << "Opção: ";
     std::cin >> option;
@@ -223,6 +263,17 @@ int main()
 
     case 4:
         negative(input_image, output_image, &lines, &columns, &tone);
+        break;
+
+    case 5:
+        int shading;
+        std::cout << std::endl
+                  << "Digite o valor desejado de tons a escurecer ou clarear a imagem" << std::endl
+                  << "Valores negativos para escurecer, valores positivos para clarear" << std::endl
+                  << "Os tons usados na imagem vão de 0 (preto) a 255 (branco)" << std::endl
+                  << "Mudança desejada: ";
+        std::cin >> shading;
+        shade(input_image, output_image, &lines, &columns, shading);
         break;
 
     default:
