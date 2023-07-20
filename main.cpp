@@ -73,9 +73,9 @@ void rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir)
     switch (dir)
     {
     case 0: // Roda os valores da matriz 90 graus à esquerda
-        for (int i = 0; i < *lin; i++)
+        for (int i = 0; i < *col; i++)
         {
-            for (int j = 0; j < *col; j++)
+            for (int j = 0; j < *lin; j++)
             {
                 oImg[i][j] = iImg[j][*col - i];
             }
@@ -83,11 +83,11 @@ void rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir)
         break;
 
     case 1: // Roda os valores da matriz 90 graus à direita
-        for (int i = 0; i < *lin; i++)
+        for (int i = 0; i < *col; i++)
         {
-            for (int j = 0; j < *col; j++)
+            for (int j = 0; j < *lin; j++)
             {
-                oImg[i][j] = iImg[*col - j][i];
+                oImg[i][j] = iImg[*lin - j][i];
             }
         }
         break;
