@@ -62,17 +62,19 @@ int savePGM(std::string name, tImage oImg, int lin, int col, int tone)
  * Função que rotaciona os valores da matriz imagem input
  * e coloca suas novas posições na matriz imagen output
  */
-int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir)
+int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir, std::string *msg)
 {
     switch (dir)
     {
     case 0: // Roda os valores da matriz 90 graus à esquerda
+        *msg = "esquerda";
         for (int i = 0; i < *col; i++)
             for (int j = 0; j < *lin; j++)
                 oImg[i][j] = iImg[j][*col - i];
         break;
 
     case 1: // Roda os valores da matriz 90 graus à direita
+        *msg = "direita";
         for (int i = 0; i < *col; i++)
             for (int j = 0; j < *lin; j++)
                 oImg[i][j] = iImg[*lin - j][i];
@@ -91,14 +93,22 @@ int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir)
  * para a binarização. Valores maiores são preenchidos por branco na imagem output
  * enquanto valores menores são preenchidos com preto
  */
-void binarize(tImage iImg, tImage oImg, int *lin, int *col, int dsr_tone)
+int binarize(tImage iImg, tImage oImg, int *lin, int *col, int dsr_tone)
 {
-    for (int i = 0; i < *lin; i++)
-        for (int j = 0; j < *col; j++)
-            if (iImg[i][j] < dsr_tone)
-                oImg[i][j] = 0;
-            else
-                oImg[i][j] = 255;
+    if (dsr_tone > 255 || dsr_tone < 0)
+    {
+        error = "Erro: valor inválido.";
+        return 4;
+    }
+    else
+        for (int i = 0; i < *lin; i++)
+            for (int j = 0; j < *col; j++)
+                if (iImg[i][j] < dsr_tone)
+                    oImg[i][j] = 0;
+                else
+                    oImg[i][j] = 255;
+
+    return 0;
 }
 
 /*
@@ -128,22 +138,28 @@ void negative(tImage iImg, tImage oImg, int *lin, int *col, int *tone)
 }
 
 // Esclarese ou escurece a imagem de acordo com o que o usuário especifica
-void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade)
+void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade, std::string *msg)
 {
     if (shade < 0)
+    {
+        *msg = "escurecida";
         for (int i = 0; i < *lin; i++)
             for (int j = 0; j < *col; j++)
                 if (iImg[i][j] + shade < 0)
                     oImg[i][j] = 0;
                 else
                     oImg[i][j] = iImg[i][j] + shade;
+    }
     else
+    {
+        *msg = "clareada";
         for (int i = 0; i < *lin; i++)
             for (int j = 0; j < *col; j++)
                 if (iImg[i][j] + shade > 255)
                     oImg[i][j] = 255;
                 else
                     oImg[i][j] = iImg[i][j] + shade;
+    }
 }
 
 /*
@@ -157,15 +173,16 @@ void copy(tImage iImg, tImage oImg, int *lin, int *col)
             oImg[i][j] = iImg[i][j];
 }
 
+/*
+ * Salva alterações na imagem de input toda vez que uma alteração for feita na imagem output.
+ * Assim é possível fazer várias alterações em sequência, uma vez que nas outras funções as
+ * mudanças da imagem de output usam a imagem input como base
+ */
 void saveChanges(tImage iImg, tImage oImg, int *lin, int *col)
 {
     for (int i = 0; i < *lin; i++)
-    {
         for (int j = 0; j < *col; j++)
-        {
             iImg[i][j] = oImg[i][j];
-        }
-    }
 }
 
 /*
@@ -176,7 +193,7 @@ int main()
 {
     tImage input_image, output_image;
     int columns, lines, tone, option;
-    std::string input_file, output_file;
+    std::string input_file, output_file, message;
 
     // Leitura do arquivo de entrada da imagem.
     std::cout << " Entre com o nome da imagem de entrada: ";
@@ -199,7 +216,7 @@ int main()
                   << "3-Aplicar filtro passa-baida" << std::endl
                   << "4-Inverter cores da imagem" << std::endl
                   << "5-Escurecer ou clarear a imagem" << std::endl
-                  << "6-Copiar a imagem" << std::endl
+                  << "6-Copiar a imagem inicial" << std::endl
                   << "7-Finalizar" << std::endl
                   << "Opção: ";
         std::cin >> option;
@@ -214,12 +231,14 @@ int main()
                       << "1-Direita" << std::endl
                       << "Opção: ";
             std::cin >> direction;
-            if (rotate(input_image, output_image, &lines, &columns, direction) != 0)
+            if (rotate(input_image, output_image, &lines, &columns, direction, &message) != 0)
             {
                 std::cout << "\n" + error + "\n";
                 return 1;
             }
             saveChanges(input_image, output_image, &lines, &columns);
+            std::cout << std::endl
+                      << "Imagem rotacionada à " << message << " com sucesso";
             break;
 
         case 1:
@@ -230,22 +249,35 @@ int main()
                       << "Tons de igual ou mais alto valor serão convertidos em branco" << std::endl
                       << "Tom desejado: ";
             std::cin >> desired_tone;
-            binarize(input_image, output_image, &lines, &columns, desired_tone);
+            if (binarize(input_image, output_image, &lines, &columns, desired_tone) != 0)
+            {
+                std::cout << "\n" + error + "\n";
+                return 1;
+            }
             saveChanges(input_image, output_image, &lines, &columns);
+            std::cout << std::endl
+                      << "Imagem binarizada com sucesso.";
             break;
 
         case 2:
             iconize(input_image, output_image, &lines, &columns);
             saveChanges(input_image, output_image, &lines, &columns);
+            std::cout << std::endl
+                      << "Imagem iconizada com sucesso.";
             break;
 
         case 3:
             smooth();
+            saveChanges(input_image, output_image, &lines, &columns);
+            std::cout << std::endl
+                      << "Imagem suavizada com sucesso.";
             break;
 
         case 4:
             negative(input_image, output_image, &lines, &columns, &tone);
             saveChanges(input_image, output_image, &lines, &columns);
+            std::cout << std::endl
+                      << "Imagem negativada com sucesso.";
             break;
 
         case 5:
@@ -256,8 +288,10 @@ int main()
                       << "Os tons usados na imagem vão de 0 (preto) a 255 (branco)" << std::endl
                       << "Mudança desejada: ";
             std::cin >> shading;
-            shade(input_image, output_image, &lines, &columns, shading);
+            shade(input_image, output_image, &lines, &columns, shading, &message);
             saveChanges(input_image, output_image, &lines, &columns);
+            std::cout << std::endl
+                      << "Imagem " << message << " com sucesso.";
             break;
 
         case 6:
@@ -284,6 +318,5 @@ int main()
             return 3;
         }
     }
-
     return 0;
 }
