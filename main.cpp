@@ -227,7 +227,7 @@ int main()
                   << "0-Rotacionar a imagem" << std::endl
                   << "1-Binarizar a imagem" << std::endl
                   << "2-Iconizar a imagem (64x64)" << std::endl
-                  << "3-Aplicar filtro passa-baida" << std::endl
+                  << "3-Aplicar filtro passa-baixa" << std::endl
                   << "4-Inverter cores da imagem" << std::endl
                   << "5-Escurecer ou clarear a imagem" << std::endl
                   << "6-Copiar a imagem inicial" << std::endl
