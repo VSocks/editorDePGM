@@ -108,14 +108,11 @@ void binarize(tImage iImg, tImage oImg, int *lin, int *col, int dsr_tone)
  */
 void iconize(tImage iImg, tImage oImg, int *lin, int *col)
 {
-    int pixelX = *lin / 64;
-    int pixelY = *col / 64;
+    for (int i = 0; i < 64; i++)
+        for (int j = 0; j < 64; j++)
+            oImg[i][j] = iImg[i * (*lin / 64)][j * (*col / 64)];
     *lin = 64;
     *col = 64;
-
-    for (int i = 0; i < *lin; i++)
-        for (int j = 0; j < *col; j++)
-            oImg[i][j] = iImg[i * pixelX][j * pixelY];
 }
 
 void smooth()
@@ -160,6 +157,17 @@ void copy(tImage iImg, tImage oImg, int *lin, int *col)
             oImg[i][j] = iImg[i][j];
 }
 
+void saveChanges(tImage iImg, tImage oImg, int *lin, int *col)
+{
+    for (int i = 0; i < *lin; i++)
+    {
+        for (int j = 0; j < *col; j++)
+        {
+            iImg[i][j] = oImg[i][j];
+        }
+    }
+}
+
 /*
  * Leitura e Escrita de arquivos no formato PGM com funções.
  */
@@ -180,90 +188,101 @@ int main()
         std::cout << "\n" + error + "\n";
         return 1;
     }
-
-    std::cout << std::endl
-              << "O que quer fazer com a imagem?" << std::endl
-              << std::endl
-              << "0-Rotacionar a imagem" << std::endl
-              << "1-Binarizar a imagem" << std::endl
-              << "2-Iconizar a imagem (64x64)" << std::endl
-              << "3-Aplicar filtro passa-baida" << std::endl
-              << "4-Inverter cores da imagem" << std::endl
-              << "5-Escurecer ou clarear a imagem" << std::endl
-              << "6-Copiar a imagem" << std::endl
-              << "Opção: ";
-    std::cin >> option;
-
-    switch (option)
+    while (option != 7)
     {
-    case 0:
-        int direction;
         std::cout << std::endl
-                  << "Escolha para qual direção rotacionar" << std::endl
-                  << "0-Esquerda" << std::endl
-                  << "1-Direita" << std::endl
+                  << "O que quer fazer com a imagem?" << std::endl
+                  << std::endl
+                  << "0-Rotacionar a imagem" << std::endl
+                  << "1-Binarizar a imagem" << std::endl
+                  << "2-Iconizar a imagem (64x64)" << std::endl
+                  << "3-Aplicar filtro passa-baida" << std::endl
+                  << "4-Inverter cores da imagem" << std::endl
+                  << "5-Escurecer ou clarear a imagem" << std::endl
+                  << "6-Copiar a imagem" << std::endl
+                  << "7-Finalizar" << std::endl
                   << "Opção: ";
-        std::cin >> direction;
-        if (rotate(input_image, output_image, &lines, &columns, direction) != 0)
+        std::cin >> option;
+
+        switch (option)
         {
-            std::cout << "\n" + error + "\n";
-            return 1;
+        case 0:
+            int direction;
+            std::cout << std::endl
+                      << "Escolha para qual direção rotacionar" << std::endl
+                      << "0-Esquerda" << std::endl
+                      << "1-Direita" << std::endl
+                      << "Opção: ";
+            std::cin >> direction;
+            if (rotate(input_image, output_image, &lines, &columns, direction) != 0)
+            {
+                std::cout << "\n" + error + "\n";
+                return 1;
+            }
+            saveChanges(input_image, output_image, &lines, &columns);
+            break;
+
+        case 1:
+            int desired_tone;
+            std::cout << std::endl
+                      << "Digite o valor do tom de cinza desejado para binarização, entre 0 e 255" << std::endl
+                      << "Tons de mais baixo valor serão convertidos em preto" << std::endl
+                      << "Tons de igual ou mais alto valor serão convertidos em branco" << std::endl
+                      << "Tom desejado: ";
+            std::cin >> desired_tone;
+            binarize(input_image, output_image, &lines, &columns, desired_tone);
+            saveChanges(input_image, output_image, &lines, &columns);
+            break;
+
+        case 2:
+            iconize(input_image, output_image, &lines, &columns);
+            saveChanges(input_image, output_image, &lines, &columns);
+            break;
+
+        case 3:
+            smooth();
+            break;
+
+        case 4:
+            negative(input_image, output_image, &lines, &columns, &tone);
+            saveChanges(input_image, output_image, &lines, &columns);
+            break;
+
+        case 5:
+            int shading;
+            std::cout << std::endl
+                      << "Digite o valor desejado de tons a escurecer ou clarear a imagem" << std::endl
+                      << "Valores negativos para escurecer, valores positivos para clarear" << std::endl
+                      << "Os tons usados na imagem vão de 0 (preto) a 255 (branco)" << std::endl
+                      << "Mudança desejada: ";
+            std::cin >> shading;
+            shade(input_image, output_image, &lines, &columns, shading);
+            saveChanges(input_image, output_image, &lines, &columns);
+            break;
+
+        case 6:
+            copy(input_image, output_image, &lines, &columns);
+            break;
+
+        case 7:
+            // Escrita do arquivo de saída da imagem.
+            std::cout << std::endl
+                      << "Entre com o nome da imagem de saída: ";
+            std::cin >> output_file;
+            output_file += ".pgm";
+            if (savePGM(output_file, output_image, lines, columns, tone) != 0)
+            {
+                std::cout << "\n" + error + "\n";
+                return 1;
+            }
+            return 0;
+            break;
+
+        default:
+            std::cout << std::endl
+                      << "Erro: opção inválida." << std::endl;
+            return 3;
         }
-        break;
-
-    case 1:
-        int desired_tone;
-        std::cout << std::endl
-                  << "Digite o valor do tom de cinza desejado para binarização, entre 0 e 255" << std::endl
-                  << "Tons de mais baixo valor serão convertidos em preto" << std::endl
-                  << "Tons de igual ou mais alto valor serão convertidos em branco" << std::endl
-                  << "Tom desejado: ";
-        std::cin >> desired_tone;
-        binarize(input_image, output_image, &lines, &columns, desired_tone);
-        break;
-
-    case 2:
-        iconize(input_image, output_image, &lines, &columns);
-        break;
-
-    case 3:
-        smooth();
-        break;
-
-    case 4:
-        negative(input_image, output_image, &lines, &columns, &tone);
-        break;
-
-    case 5:
-        int shading;
-        std::cout << std::endl
-                  << "Digite o valor desejado de tons a escurecer ou clarear a imagem" << std::endl
-                  << "Valores negativos para escurecer, valores positivos para clarear" << std::endl
-                  << "Os tons usados na imagem vão de 0 (preto) a 255 (branco)" << std::endl
-                  << "Mudança desejada: ";
-        std::cin >> shading;
-        shade(input_image, output_image, &lines, &columns, shading);
-        break;
-
-    case 6:
-        copy(input_image, output_image, &lines, &columns);
-        break;
-
-    default:
-        std::cout << std::endl
-                  << "Erro: opção inválida." << std::endl;
-                  return 3;
-    }
-
-    // Escrita do arquivo de saída da imagem.
-    std::cout << std::endl
-              << "Entre com o nome da imagem de saída: ";
-    std::cin >> output_file;
-    output_file += ".pgm";
-    if (savePGM(output_file, output_image, lines, columns, tone) != 0)
-    {
-        std::cout << "\n" + error + "\n";
-        return 1;
     }
 
     return 0;
