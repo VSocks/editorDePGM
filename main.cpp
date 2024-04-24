@@ -203,7 +203,7 @@ int main(){
         return 1;
     }
 
-    while (option != 6){
+    while (option != 7){
         std::cout << "\nO que quer fazer com a imagem?\n\n"
                   << "0-Rotacionar a imagem\n"
                   << "1-Binarizar a imagem\n"
@@ -217,92 +217,93 @@ int main(){
         std::cin >> option;
 
         switch (option){
-        case 0:
-            int direction;
-            std::cout << "\nEscolha para qual direção rotacionar\n"
-                      << "0-Esquerda\n"
-                      << "1-Direita\n"
-                      << "Opção: ";
-            std::cin >> direction;
-            if (rotate(input_image, output_image, &lines, &columns, direction, &message) != 0){
-                std::cout << "\n" + error + "\n";
+            case 0:
+                int direction;
+                std::cout << "\nEscolha para qual direção rotacionar\n"
+                        << "0-Esquerda\n"
+                        << "1-Direita\n"
+                        << "Opção: ";
+                std::cin >> direction;
+                if (rotate(input_image, output_image, &lines, &columns, direction, &message) != 0){
+                    std::cout << "\n" + error + "\n";
+                    return 1;
+                }
+                saveChanges(input_image, output_image, &lines, &columns);
+                std::cout << "\nImagem rotacionada à " << message << " com sucesso";
+                break;
+
+            case 1:
+                int desired_tone;
+                std::cout << "\nDigite o valor do tom de cinza desejado para binarização, entre 0 e 255\n"
+                        << "Tons de mais baixo valor serão convertidos em preto\n"
+                        << "Tons de igual ou mais alto valor serão convertidos em branco\n"
+                        << "Tom desejado: ";
+                std::cin >> desired_tone;
+                if (binarize(input_image, output_image, &lines, &columns, desired_tone) != 0){
+                    std::cout << "\n" + error + "\n";
+                    return 1;
+                }
+                saveChanges(input_image, output_image, &lines, &columns);
+                std::cout << "\nImagem binarizada com sucesso.";
+                break;
+
+            case 2:
+                iconize(input_image, output_image, &lines, &columns);
+                saveChanges(input_image, output_image, &lines, &columns);
+                std::cout << "\nImagem iconizada com sucesso.";
+                break;
+
+            case 3:
+                smooth(input_image, output_image, &lines, &columns);
+                saveChanges(input_image, output_image, &lines, &columns);
+                std::cout << "\nImagem suavizada com sucesso.";
+                break;
+
+            case 4:
+                negative(input_image, output_image, &lines, &columns, &tone);
+                saveChanges(input_image, output_image, &lines, &columns);
+                std::cout << "\nImagem negativada com sucesso.";
+                break;
+
+            case 5:
+                int shading;
+                std::cout << "\nDigite o valor desejado de tons a escurecer ou clarear a imagem\n"
+                        << "Valores negativos para escurecer, valores positivos para clarear\n"
+                        << "Os tons usados na imagem vão de 0 (preto) a 255 (branco)\n"
+                        << "Mudança desejada: ";
+                std::cin >> shading;
+                shade(input_image, output_image, &lines, &columns, shading, &message);
+                saveChanges(input_image, output_image, &lines, &columns);
+                std::cout << "\nImagem " << message << " com sucesso.";
+                break;
+
+            case 6:
+                int orientation;
+                std::cout << "\nEscolha qual orientação inverter\n"
+                        << "0-Inverter horizontalmente\n"
+                        << "1-Inverter verticalmente\n"
+                        << "Opção: ";
+                std::cin >> orientation;
+                flip(input_image, output_image, &lines, &columns, orientation, &message);
+                saveChanges(input_image, output_image, &lines, &columns);
+                std::cout << "\nImagem invertida " << message << " com sucesso.";
+                break;
+
+            case 7:
+                // Escrita do arquivo de saída da imagem.
+                std::cout << "\nEntre com o nome da imagem de saída: ";
+                std::cin >> output_file;
+                output_file += ".pgm";
+                if (savePGM(output_file, output_image, lines, columns, tone) != 0){
+                    std::cout << "\n" + error + "\n";
+                    return 1;
+                }
+                return 0;
+                break;
+
+            default:
+                std::cout << "\nErro: opção inválida.\n";
                 return 1;
-            }
-            saveChanges(input_image, output_image, &lines, &columns);
-            std::cout << "\nImagem rotacionada à " << message << " com sucesso";
-            break;
-
-        case 1:
-            int desired_tone;
-            std::cout << "\nDigite o valor do tom de cinza desejado para binarização, entre 0 e 255\n"
-                      << "Tons de mais baixo valor serão convertidos em preto\n"
-                      << "Tons de igual ou mais alto valor serão convertidos em branco\n"
-                      << "Tom desejado: ";
-            std::cin >> desired_tone;
-            if (binarize(input_image, output_image, &lines, &columns, desired_tone) != 0){
-                std::cout << "\n" + error + "\n";
-                return 1;
-            }
-            saveChanges(input_image, output_image, &lines, &columns);
-            std::cout << "\nImagem binarizada com sucesso.";
-            break;
-
-        case 2:
-            iconize(input_image, output_image, &lines, &columns);
-            saveChanges(input_image, output_image, &lines, &columns);
-            std::cout << "\nImagem iconizada com sucesso.";
-            break;
-
-        case 3:
-            smooth(input_image, output_image, &lines, &columns);
-            saveChanges(input_image, output_image, &lines, &columns);
-            std::cout << "\nImagem suavizada com sucesso.";
-            break;
-
-        case 4:
-            negative(input_image, output_image, &lines, &columns, &tone);
-            saveChanges(input_image, output_image, &lines, &columns);
-            std::cout << "\nImagem negativada com sucesso.";
-            break;
-
-        case 5:
-            int shading;
-            std::cout << "\nDigite o valor desejado de tons a escurecer ou clarear a imagem\n"
-                      << "Valores negativos para escurecer, valores positivos para clarear\n"
-                      << "Os tons usados na imagem vão de 0 (preto) a 255 (branco)\n"
-                      << "Mudança desejada: ";
-            std::cin >> shading;
-            shade(input_image, output_image, &lines, &columns, shading, &message);
-            saveChanges(input_image, output_image, &lines, &columns);
-            std::cout << "\nImagem " << message << " com sucesso.";
-            break;
-
-        case 6:
-        int orientation;
-        std::cout << "\nEscolha qual orientação inverter\n"
-                  << "0-Inverter horizontalmente\n"
-                  << "1-Inverter verticalmente\n"
-                  << "Opção: ";
-        std::cin >> orientation;
-        flip(input_image, output_image, &lines, &columns, orientation, &message);
-        saveChanges(input_image, output_image, &lines, &columns);
-        std::cout << "\nImagem invertida " << message << " com sucesso.";
-
-        case 7:
-            // Escrita do arquivo de saída da imagem.
-            std::cout << "\nEntre com o nome da imagem de saída: ";
-            std::cin >> output_file;
-            output_file += ".pgm";
-            if (savePGM(output_file, output_image, lines, columns, tone) != 0){
-                std::cout << "\n" + error + "\n";
-                return 1;
-            }
-            return 0;
-            break;
-
-        default:
-            std::cout << "\nErro: opção inválida.\n";
-            return 1;
         }
     }
     return 0;
