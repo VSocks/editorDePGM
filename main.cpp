@@ -8,20 +8,17 @@ std::string error;
 
 // Cria matriz "imagem input" com os valores do arquivo de entrada
 // esse arquivo será então processado para formar a matriz "imagem output"
-int loadPGM(std::string name, tImage iImg, int *lin, int *col, int *tone)
-{
+int loadPGM(std::string name, tImage iImg, int *lin, int *col, int *tone){
     std::string type;
     std::ifstream file(name);
 
-    if (!file.is_open())
-    {
+    if (!file.is_open()){
         error = "Erro: Arquivo não encontrado.";
         return 1;
     }
 
     file >> type;
-    if (type != "P2")
-    {
+    if (type != "P2"){
         error = "Erro: Arquivo não tem formato P2.";
         return 1;
     }
@@ -36,11 +33,9 @@ int loadPGM(std::string name, tImage iImg, int *lin, int *col, int *tone)
 }
 
 // Cria arquivo pgm baseado na matriz "imagem output"
-int savePGM(std::string name, tImage oImg, int lin, int col, int tone)
-{
+int savePGM(std::string name, tImage oImg, int lin, int col, int tone){
     std::ofstream file(name);
-    if (!file.is_open())
-    {
+    if (!file.is_open()){
         error = "Erro: Arquivo não encontrado.";
         return 1;
     }
@@ -48,8 +43,7 @@ int savePGM(std::string name, tImage oImg, int lin, int col, int tone)
     file << "P2\n"
          << col << " " << lin << '\n'
          << tone << '\n';
-    for (int i = 0; i < lin; i++)
-    {
+    for (int i = 0; i < lin; i++){
         for (int j = 0; j < col; j++)
             file << oImg[i][j] << " ";
         file << '\n';
@@ -61,27 +55,25 @@ int savePGM(std::string name, tImage oImg, int lin, int col, int tone)
 
 // Função que rotaciona os valores da matriz imagem input
 // e coloca suas novas posições na matriz imagen output
-int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir, std::string *msg)
-{
-    switch (dir)
-    {
-    case 0: // Roda os valores da matriz 90 graus à esquerda
-        *msg = "esquerda";
-        for (int i = 0; i < *col; i++)
-            for (int j = 0; j < *lin; j++)
-                oImg[i][j] = iImg[j][*col - i];
-        break;
+int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir, std::string *msg){
+    switch (dir){
+        case 0: // Roda os valores da matriz 90 graus à esquerda
+            *msg = "esquerda";
+            for (int i = 0; i < *col; i++)
+                for (int j = 0; j < *lin; j++)
+                    oImg[i][j] = iImg[j][*col - i];
+            break;
 
-    case 1: // Roda os valores da matriz 90 graus à direita
-        *msg = "direita";
-        for (int i = 0; i < *col; i++)
-            for (int j = 0; j < *lin; j++)
-                oImg[i][j] = iImg[*lin - j][i];
-        break;
+        case 1: // Roda os valores da matriz 90 graus à direita
+            *msg = "direita";
+            for (int i = 0; i < *col; i++)
+                for (int j = 0; j < *lin; j++)
+                    oImg[i][j] = iImg[*lin - j][i];
+            break;
 
-    default:
-        error = "Erro: opção inválida.";
-        return 1;
+        default:
+            error = "Erro: opção inválida.";
+            return 1;
     }
     std::swap(*lin, *col);
     return 0;
@@ -90,10 +82,8 @@ int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir, std::string *m
 // Lê cada valor da imagem input e compara com o valor desejado pelo usuário
 // para a binarização. Valores maiores são preenchidos por branco na imagem output
 // enquanto valores menores são preenchidos com preto
-int binarize(tImage iImg, tImage oImg, int *lin, int *col, int dsr_tone)
-{
-    if (dsr_tone > 255 || dsr_tone < 0)
-    {
+int binarize(tImage iImg, tImage oImg, int *lin, int *col, int dsr_tone){
+    if (dsr_tone > 255 || dsr_tone < 0){
         error = "Erro: valor inválido.";
         return 1;
     }
@@ -113,8 +103,7 @@ int binarize(tImage iImg, tImage oImg, int *lin, int *col, int dsr_tone)
  * ou comprimento da imagem real um novo píxel da imagem iconizada deve ser escolhido.
  * Isso acaba "esticando" as proporções de imagens que não são quadradas
  */
-void iconize(tImage iImg, tImage oImg, int *lin, int *col)
-{
+void iconize(tImage iImg, tImage oImg, int *lin, int *col){
     for (int i = 0; i < 64; i++)
         for (int j = 0; j < 64; j++)
             oImg[i][j] = iImg[i * (*lin / 64)][j * (*col / 64)];
@@ -124,16 +113,13 @@ void iconize(tImage iImg, tImage oImg, int *lin, int *col)
 }
 
 // Função que aplica filtro passa-baixa
-void smooth(tImage iImg, tImage oImg, int *lin, int *col)
-{
+void smooth(tImage iImg, tImage oImg, int *lin, int *col){
     int matrix[3][3] = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
 
     for (int i = 0; i < *lin; i++)
-        for (int j = 0; j < *col; j++)
-        {
+        for (int j = 0; j < *col; j++){
             int sum1 = 0;
-            for (int k = -1; k <= 1; k++)
-            {
+            for (int k = -1; k <= 1; k++){
                 for (int l = -1; l <= 1; l++)
                     sum1 += iImg[i + 1][j + l] * matrix[k + 1][l + 1];
             }
@@ -142,18 +128,15 @@ void smooth(tImage iImg, tImage oImg, int *lin, int *col)
 }
 
 // Coloca valores invertidos da matriz imagem output na matriz imagem output
-void negative(tImage iImg, tImage oImg, int *lin, int *col, int *tone)
-{
+void negative(tImage iImg, tImage oImg, int *lin, int *col, int *tone){
     for (int i = 0; i < *lin; i++)
         for (int j = 0; j < *col; j++)
             oImg[i][j] = *tone - iImg[i][j];
 }
 
 // Esclarese ou escurece a imagem de acordo com o que o usuário especifica
-void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade, std::string *msg)
-{
-    if (shade < 0)
-    {
+void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade, std::string *msg){
+    if (shade < 0){
         *msg = "escurecida";
         for (int i = 0; i < *lin; i++)
             for (int j = 0; j < *col; j++)
@@ -178,15 +161,15 @@ void flip(tImage iImg, tImage oImg, int *lin, int *col, int orien, std::string *
         //inverter horizontal
         case 0:
             *msg = "horizontalmente";
-            for (int i = 0;; i++)
-                for (int j = 0;; j++)
+            for (int i = 0; i < *lin; i++)
+                for (int j = 0; j < *col; j++)
                     oImg[i][j] = iImg[i][*col - j];
             break;
         //inverter vertical
         case 1:
             *msg = "verticalmente";
-            for (int i = 0;; i++)
-                for (int j = 0;; j++)
+            for (int i = 0; i < *lin; i++)
+                for (int j = 0; j < *col; j++)
                     oImg[i][j] = iImg[*lin - i][j];
             break;
     }
@@ -195,8 +178,7 @@ void flip(tImage iImg, tImage oImg, int *lin, int *col, int orien, std::string *
 // Salva alterações na imagem de input toda vez que uma alteração for feita na imagem output.
 // Assim é possível fazer várias alterações em sequência, uma vez que nas outras funções as
 // mudanças da imagem de output usam a imagem input como base
-void saveChanges(tImage iImg, tImage oImg, int *lin, int *col)
-{
+void saveChanges(tImage iImg, tImage oImg, int *lin, int *col){
     for (int i = 0; i < *lin; i++)
         for (int j = 0; j < *col; j++)
             iImg[i][j] = oImg[i][j];
@@ -206,8 +188,7 @@ void saveChanges(tImage iImg, tImage oImg, int *lin, int *col)
  * Leitura e Escrita de arquivos no formato PGM com funções.
  */
 
-int main()
-{
+int main(){
     tImage input_image, output_image;
     int columns, lines, tone, option;
     std::string input_file, output_file, message;
@@ -217,14 +198,12 @@ int main()
     std::cin >> input_file;
     input_file += ".pgm";
 
-    if (loadPGM(input_file, input_image, &lines, &columns, &tone) != 0)
-    {
+    if (loadPGM(input_file, input_image, &lines, &columns, &tone) != 0){
         std::cout << "\n" + error + "\n";
         return 1;
     }
 
-    while (option != 6)
-    {
+    while (option != 6){
         std::cout << "\nO que quer fazer com a imagem?\n\n"
                   << "0-Rotacionar a imagem\n"
                   << "1-Binarizar a imagem\n"
@@ -237,8 +216,7 @@ int main()
                   << "Opção: ";
         std::cin >> option;
 
-        switch (option)
-        {
+        switch (option){
         case 0:
             int direction;
             std::cout << "\nEscolha para qual direção rotacionar\n"
@@ -246,8 +224,7 @@ int main()
                       << "1-Direita\n"
                       << "Opção: ";
             std::cin >> direction;
-            if (rotate(input_image, output_image, &lines, &columns, direction, &message) != 0)
-            {
+            if (rotate(input_image, output_image, &lines, &columns, direction, &message) != 0){
                 std::cout << "\n" + error + "\n";
                 return 1;
             }
@@ -262,8 +239,7 @@ int main()
                       << "Tons de igual ou mais alto valor serão convertidos em branco\n"
                       << "Tom desejado: ";
             std::cin >> desired_tone;
-            if (binarize(input_image, output_image, &lines, &columns, desired_tone) != 0)
-            {
+            if (binarize(input_image, output_image, &lines, &columns, desired_tone) != 0){
                 std::cout << "\n" + error + "\n";
                 return 1;
             }
@@ -310,15 +286,14 @@ int main()
         std::cin >> orientation;
         flip(input_image, output_image, &lines, &columns, orientation, &message);
         saveChanges(input_image, output_image, &lines, &columns);
-        std::cout << "\nImagem invertida " << message << " com sucesso";
+        std::cout << "\nImagem invertida " << message << " com sucesso.";
 
         case 7:
             // Escrita do arquivo de saída da imagem.
             std::cout << "\nEntre com o nome da imagem de saída: ";
             std::cin >> output_file;
             output_file += ".pgm";
-            if (savePGM(output_file, output_image, lines, columns, tone) != 0)
-            {
+            if (savePGM(output_file, output_image, lines, columns, tone) != 0){
                 std::cout << "\n" + error + "\n";
                 return 1;
             }
