@@ -22,7 +22,7 @@ int main(){
         return 1;
     }
 
-    while(option != 7){
+    do{
         std::cout << "\nO que quer fazer com a imagem?\n\n"
                   << "0-Rotacionar a imagem\n"
                   << "1-Binarizar a imagem\n"
@@ -127,6 +127,6 @@ int main(){
                 std::cout << "\nErro: opção inválida.\n";
                 return 1;
         }
-    }
+    }while(option != 7);
     return 0;
 }
