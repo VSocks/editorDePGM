@@ -18,7 +18,7 @@ int main(){
     input_file += ".pgm";
 
     if(loadPGM(input_file, input_image, &lines, &columns, &tone) != 0){
-        std::cout << '\n' + error + '\n';
+        std::cout << error;
         return 1;
     }
 
