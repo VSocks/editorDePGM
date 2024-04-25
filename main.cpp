@@ -10,6 +10,7 @@
 int main(){
     tImage input_image, output_image;
     int columns, lines, tone, option;
+    bool edited = false;
     std::string input_file, output_file, message;
 
     // Leitura do arquivo de entrada da imagem.
@@ -37,6 +38,7 @@ int main(){
 
         switch (option){
             case 0:
+                edited = true;
                 int direction;
                 std::cout << "\nEscolha para qual direção rotacionar\n"
                         << "0-Esquerda\n"
@@ -52,6 +54,7 @@ int main(){
                 break;
 
             case 1:
+                edited = true;
                 int desired_tone;
                 std::cout << "\nDigite o valor do tom de cinza desejado para binarização, entre 0 e 255\n"
                         << "Tons de mais baixo valor serão convertidos em preto\n"
@@ -67,24 +70,28 @@ int main(){
                 break;
 
             case 2:
+                edited = true;
                 iconize(input_image, output_image, &lines, &columns);
                 saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem iconizada com sucesso.";
                 break;
 
             case 3:
+                edited = true;
                 smooth(input_image, output_image, lines, columns);
                 saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem suavizada com sucesso.";
                 break;
 
             case 4:
+                edited = true;
                 negative(input_image, output_image, lines, columns, &tone);
                 saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem negativada com sucesso.";
                 break;
 
             case 5:
+                edited = true;
                 int shading;
                 std::cout << "\nDigite o valor desejado de tons a escurecer ou clarear a imagem\n"
                         << "Valores negativos para escurecer, valores positivos para clarear\n"
@@ -97,6 +104,7 @@ int main(){
                 break;
 
             case 6:
+                edited = true;
                 int orientation;
                 std::cout << "\nEscolha qual orientação inverter\n"
                         << "0-Inverter horizontalmente\n"
@@ -113,14 +121,19 @@ int main(){
 
             case 7:
                 // Escrita do arquivo de saída da imagem.
-                std::cout << "\nEntre com o nome da imagem de saída: ";
-                std::cin >> output_file;
-                output_file += ".pgm";
-                if(savePGM(output_file, output_image, lines, columns, tone) != 0){
-                    std::cout << error;
+                if(edited){
+                    std::cout << "\nEntre com o nome da imagem de saída: ";
+                    std::cin >> output_file;
+                    output_file += ".pgm";
+                    if(savePGM(output_file, output_image, lines, columns, tone) != 0){
+                        std::cout << error;
+                        return 1;
+                    }
+                    return 0;
+                }else{
+                    std::cout << "\nOperação cancelada.\n";
                     return 1;
                 }
-                return 0;
                 break;
 
             default:
