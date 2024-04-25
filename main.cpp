@@ -13,13 +13,13 @@ int loadPGM(std::string name, tImage iImg, int *lin, int *col, int *tone){
     std::ifstream file(name);
 
     if(!file.is_open()){
-        error = "Erro: Arquivo não encontrado.";
+        error = "\nErro: Arquivo não encontrado.\n";
         return 1;
     }
 
     file >> type;
     if(type != "P2"){
-        error = "Erro: Arquivo não tem formato P2.";
+        error = "\nErro: Arquivo não tem formato P2.\n";
         return 1;
     }
 
@@ -36,7 +36,7 @@ int loadPGM(std::string name, tImage iImg, int *lin, int *col, int *tone){
 int savePGM(std::string name, tImage oImg, int lin, int col, int tone){
     std::ofstream file(name);
     if(!file.is_open()){
-        error = "Erro: Arquivo não encontrado.";
+        error = "\nErro: Arquivo não encontrado.\n";
         return 1;
     }
 
@@ -72,7 +72,7 @@ int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir, std::string *m
             break;
 
         default:
-            error = "Erro: opção inválida.";
+            error = "\nErro: Opção inválida.\n";
             return 1;
     }
     std::swap(*lin, *col);
@@ -84,7 +84,7 @@ int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir, std::string *m
 // enquanto valores menores são preenchidos com preto
 int binarize(tImage iImg, tImage oImg, int *lin, int *col, int dsr_tone){
     if(dsr_tone > 255 || dsr_tone < 0){
-        error = "Erro: valor inválido.";
+        error = "\nErro: Valor inválido.\n";
         return 1;
     }
     else
@@ -156,7 +156,7 @@ void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade, std::string 
 }
 
 // Inverte a orientação da imagem verticalmente ou horizontalmente
-void flip(tImage iImg, tImage oImg, int *lin, int *col, int orien, std::string *msg){
+int flip(tImage iImg, tImage oImg, int *lin, int *col, int orien, std::string *msg){
     switch(orien){
         //inverter horizontal
         case 0:
@@ -172,7 +172,11 @@ void flip(tImage iImg, tImage oImg, int *lin, int *col, int orien, std::string *
                 for(int j = 0; j < *col; j++)
                     oImg[i][j] = iImg[*lin - i][j];
             break;
+        default:
+            error = "\nErro: Opção inválida\n";
+            return 1;
     }
+    return 0;
 }
 
 // Salva alterações na imagem de input toda vez que uma alteração for feita na imagem output.
@@ -199,7 +203,7 @@ int main(){
     input_file += ".pgm";
 
     if(loadPGM(input_file, input_image, &lines, &columns, &tone) != 0){
-        std::cout << "\n" + error + "\n";
+        std::cout << '\n' + error + '\n';
         return 1;
     }
 
@@ -225,7 +229,7 @@ int main(){
                         << "Opção: ";
                 std::cin >> direction;
                 if(rotate(input_image, output_image, &lines, &columns, direction, &message) != 0){
-                    std::cout << "\n" + error + "\n";
+                    std::cout << error;
                     return 1;
                 }
                 saveChanges(input_image, output_image, &lines, &columns);
@@ -240,7 +244,7 @@ int main(){
                         << "Tom desejado: ";
                 std::cin >> desired_tone;
                 if(binarize(input_image, output_image, &lines, &columns, desired_tone) != 0){
-                    std::cout << "\n" + error + "\n";
+                    std::cout << error;
                     return 1;
                 }
                 saveChanges(input_image, output_image, &lines, &columns);
@@ -284,7 +288,9 @@ int main(){
                         << "1-Inverter verticalmente\n"
                         << "Opção: ";
                 std::cin >> orientation;
-                flip(input_image, output_image, &lines, &columns, orientation, &message);
+                if(flip(input_image, output_image, &lines, &columns, orientation, &message) != 0){
+                    std::cout << error;
+                }
                 saveChanges(input_image, output_image, &lines, &columns);
                 std::cout << "\nImagem invertida " << message << " com sucesso.";
                 break;
@@ -295,7 +301,7 @@ int main(){
                 std::cin >> output_file;
                 output_file += ".pgm";
                 if(savePGM(output_file, output_image, lines, columns, tone) != 0){
-                    std::cout << "\n" + error + "\n";
+                    std::cout << error;
                     return 1;
                 }
                 return 0;
