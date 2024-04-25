@@ -47,7 +47,7 @@ int main(){
                     std::cout << error;
                     return 1;
                 }
-                saveChanges(input_image, output_image, &lines, &columns);
+                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem rotacionada à " << message << " com sucesso";
                 break;
 
@@ -58,29 +58,29 @@ int main(){
                         << "Tons de igual ou mais alto valor serão convertidos em branco\n"
                         << "Tom desejado: ";
                 std::cin >> desired_tone;
-                if(binarize(input_image, output_image, &lines, &columns, desired_tone) != 0){
+                if(binarize(input_image, output_image, lines, columns, desired_tone) != 0){
                     std::cout << error;
                     return 1;
                 }
-                saveChanges(input_image, output_image, &lines, &columns);
+                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem binarizada com sucesso.";
                 break;
 
             case 2:
                 iconize(input_image, output_image, &lines, &columns);
-                saveChanges(input_image, output_image, &lines, &columns);
+                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem iconizada com sucesso.";
                 break;
 
             case 3:
-                smooth(input_image, output_image, &lines, &columns);
-                saveChanges(input_image, output_image, &lines, &columns);
+                smooth(input_image, output_image, lines, columns);
+                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem suavizada com sucesso.";
                 break;
 
             case 4:
-                negative(input_image, output_image, &lines, &columns, &tone);
-                saveChanges(input_image, output_image, &lines, &columns);
+                negative(input_image, output_image, lines, columns, &tone);
+                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem negativada com sucesso.";
                 break;
 
@@ -91,8 +91,8 @@ int main(){
                         << "Os tons usados na imagem vão de 0 (preto) a 255 (branco)\n"
                         << "Mudança desejada: ";
                 std::cin >> shading;
-                shade(input_image, output_image, &lines, &columns, shading, &message);
-                saveChanges(input_image, output_image, &lines, &columns);
+                shade(input_image, output_image, lines, columns, shading, &message);
+                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem " << message << " com sucesso.";
                 break;
 
@@ -103,11 +103,11 @@ int main(){
                         << "1-Inverter verticalmente\n"
                         << "Opção: ";
                 std::cin >> orientation;
-                if(flip(input_image, output_image, &lines, &columns, orientation, &message) != 0){
+                if(flip(input_image, output_image, lines, columns, orientation, &message) != 0){
                     std::cout << error;
                     return 1;
                 }
-                saveChanges(input_image, output_image, &lines, &columns);
+                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem invertida " << message << " com sucesso.";
                 break;
 

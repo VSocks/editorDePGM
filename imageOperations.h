@@ -78,14 +78,14 @@ int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir, std::string *m
 // Lê cada valor da imagem input e compara com o valor desejado pelo usuário
 // para a binarização. Valores maiores são preenchidos por branco na imagem output
 // enquanto valores menores são preenchidos com preto
-int binarize(tImage iImg, tImage oImg, int *lin, int *col, int dsr_tone){
+int binarize(tImage iImg, tImage oImg, int lin, int col, int dsr_tone){
     if(dsr_tone > 255 || dsr_tone < 0){
         error = "\nErro: Valor inválido.\n";
         return 1;
     }
     else
-        for(int i = 0; i < *lin; i++)
-            for(int j = 0; j < *col; j++)
+        for(int i = 0; i < lin; i++)
+            for(int j = 0; j < col; j++)
                 if(iImg[i][j] < dsr_tone)
                     oImg[i][j] = 0;
                 else
@@ -109,11 +109,11 @@ void iconize(tImage iImg, tImage oImg, int *lin, int *col){
 }
 
 // Função que aplica filtro passa-baixa
-void smooth(tImage iImg, tImage oImg, int *lin, int *col){
+void smooth(tImage iImg, tImage oImg, int lin, int col){
     int matrix[3][3] = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
 
-    for(int i = 0; i < *lin; i++)
-        for(int j = 0; j < *col; j++){
+    for(int i = 0; i < lin; i++)
+        for(int j = 0; j < col; j++){
             int sum1 = 0;
             for(int k = -1; k <= 1; k++){
                 for(int l = -1; l <= 1; l++)
@@ -124,26 +124,26 @@ void smooth(tImage iImg, tImage oImg, int *lin, int *col){
 }
 
 // Coloca valores invertidos da matriz imagem output na matriz imagem output
-void negative(tImage iImg, tImage oImg, int *lin, int *col, int *tone){
-    for (int i = 0; i < *lin; i++)
-        for (int j = 0; j < *col; j++)
+void negative(tImage iImg, tImage oImg, int lin, int col, int *tone){
+    for (int i = 0; i < lin; i++)
+        for (int j = 0; j < col; j++)
             oImg[i][j] = *tone - iImg[i][j];
 }
 
 // Esclarese ou escurece a imagem de acordo com o que o usuário especifica
-void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade, std::string *msg){
+void shade(tImage iImg, tImage oImg, int lin, int col, int shade, std::string *msg){
     if(shade < 0){
         *msg = "escurecida";
-        for(int i = 0; i < *lin; i++)
-            for(int j = 0; j < *col; j++)
+        for(int i = 0; i < lin; i++)
+            for(int j = 0; j < col; j++)
                 if (iImg[i][j] + shade < 0)
                     oImg[i][j] = 0;
                 else
                     oImg[i][j] = iImg[i][j] + shade;
     }else{
         *msg = "clareada";
-        for(int i = 0; i < *lin; i++)
-            for(int j = 0; j < *col; j++)
+        for(int i = 0; i < lin; i++)
+            for(int j = 0; j < col; j++)
                 if(iImg[i][j] + shade > 255)
                     oImg[i][j] = 255;
                 else
@@ -152,21 +152,21 @@ void shade(tImage iImg, tImage oImg, int *lin, int *col, int shade, std::string 
 }
 
 // Inverte a orientação da imagem verticalmente ou horizontalmente
-int flip(tImage iImg, tImage oImg, int *lin, int *col, int orien, std::string *msg){
+int flip(tImage iImg, tImage oImg, int lin, int col, int orien, std::string *msg){
     switch(orien){
         //inverter horizontal
         case 0:
             *msg = "horizontalmente";
-            for(int i = 0; i < *lin; i++)
-                for(int j = 0; j < *col; j++)
-                    oImg[i][j] = iImg[i][*col - j];
+            for(int i = 0; i < lin; i++)
+                for(int j = 0; j < col; j++)
+                    oImg[i][j] = iImg[i][col - j];
             break;
         //inverter vertical
         case 1:
             *msg = "verticalmente";
-            for(int i = 0; i < *lin; i++)
-                for(int j = 0; j < *col; j++)
-                    oImg[i][j] = iImg[*lin - i][j];
+            for(int i = 0; i < lin; i++)
+                for(int j = 0; j < col; j++)
+                    oImg[i][j] = iImg[lin - i][j];
             break;
         default:
             error = "\nErro: Opção inválida\n";
@@ -178,8 +178,8 @@ int flip(tImage iImg, tImage oImg, int *lin, int *col, int orien, std::string *m
 // Salva alterações na imagem de input toda vez que uma alteração for feita na imagem output.
 // Assim é possível fazer várias alterações em sequência, uma vez que nas outras funções as
 // mudanças da imagem de output usam a imagem input como base
-void saveChanges(tImage iImg, tImage oImg, int *lin, int *col){
-    for(int i = 0; i < *lin; i++)
-        for (int j = 0; j < *col; j++)
+void saveChanges(tImage iImg, tImage oImg, int lin, int col){
+    for(int i = 0; i < lin; i++)
+        for (int j = 0; j < col; j++)
             iImg[i][j] = oImg[i][j];
 }
