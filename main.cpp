@@ -3,10 +3,7 @@
 #include <fstream>
 #include "imageOperations.h"
 
-/*
- * Leitura e Escrita de arquivos no formato PGM com funções.
- */
-
+ //Leitura e Escrita de arquivos no formato PGM com funções.
 int main(){
     tImage input_image, output_image;
     int columns, lines, tone, option;
@@ -14,7 +11,7 @@ int main(){
     std::string input_file, output_file, message;
 
     // Leitura do arquivo de entrada da imagem.
-    std::cout << " Entre com o nome da imagem de entrada: ";
+    std::cout << "\nEntre com o nome da imagem de entrada: ";
     std::cin >> input_file;
     input_file += ".pgm";
 
@@ -36,14 +33,14 @@ int main(){
                   << "Opção: ";
         std::cin >> option;
 
-        switch (option){
+        switch(option){
             case 0:
                 edited = true;
                 int direction;
                 std::cout << "\nEscolha para qual direção rotacionar\n"
-                        << "0-Esquerda\n"
-                        << "1-Direita\n"
-                        << "Opção: ";
+                          << "0-Esquerda\n"
+                          << "1-Direita\n"
+                          << "Opção: ";
                 std::cin >> direction;
                 if(rotate(input_image, output_image, &lines, &columns, direction, &message) != 0){
                     std::cout << error;
@@ -57,9 +54,9 @@ int main(){
                 edited = true;
                 int desired_tone;
                 std::cout << "\nDigite o valor do tom de cinza desejado para binarização, entre 0 e 255\n"
-                        << "Tons de mais baixo valor serão convertidos em preto\n"
-                        << "Tons de igual ou mais alto valor serão convertidos em branco\n"
-                        << "Tom desejado: ";
+                          << "Tons de mais baixo valor serão convertidos em preto\n"
+                          << "Tons de igual ou mais alto valor serão convertidos em branco\n"
+                          << "Tom desejado: ";
                 std::cin >> desired_tone;
                 if(binarize(input_image, output_image, lines, columns, desired_tone) != 0){
                     std::cout << error;
@@ -94,9 +91,9 @@ int main(){
                 edited = true;
                 int shading;
                 std::cout << "\nDigite o valor desejado de tons a escurecer ou clarear a imagem\n"
-                        << "Valores negativos para escurecer, valores positivos para clarear\n"
-                        << "Os tons usados na imagem vão de 0 (preto) a 255 (branco)\n"
-                        << "Mudança desejada: ";
+                          << "Valores negativos para escurecer, valores positivos para clarear\n"
+                          << "Os tons usados na imagem vão de 0 (preto) a 255 (branco)\n"
+                          << "Mudança desejada: ";
                 std::cin >> shading;
                 shade(input_image, output_image, lines, columns, shading, &message);
                 saveChanges(input_image, output_image, lines, columns);
@@ -107,9 +104,9 @@ int main(){
                 edited = true;
                 int orientation;
                 std::cout << "\nEscolha qual orientação inverter\n"
-                        << "0-Inverter horizontalmente\n"
-                        << "1-Inverter verticalmente\n"
-                        << "Opção: ";
+                          << "0-Inverter horizontalmente\n"
+                          << "1-Inverter verticalmente\n"
+                          << "Opção: ";
                 std::cin >> orientation;
                 if(flip(input_image, output_image, lines, columns, orientation, &message) != 0){
                     std::cout << error;

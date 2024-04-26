@@ -55,15 +55,15 @@ int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir, std::string *m
     switch(dir){
         case 0: // Roda os valores da matriz 90 graus à esquerda
             *msg = "esquerda";
-            for (int i = 0; i < *col; i++)
-                for (int j = 0; j < *lin; j++)
+            for(int i = 0; i < *col; i++)
+                for(int j = 0; j < *lin; j++)
                     oImg[i][j] = iImg[j][*col - i];
             break;
 
         case 1: // Roda os valores da matriz 90 graus à direita
             *msg = "direita";
-            for (int i = 0; i < *col; i++)
-                for (int j = 0; j < *lin; j++)
+            for(int i = 0; i < *col; i++)
+                for(int j = 0; j < *lin; j++)
                     oImg[i][j] = iImg[*lin - j][i];
             break;
 
@@ -115,18 +115,17 @@ void smooth(tImage iImg, tImage oImg, int lin, int col){
     for(int i = 0; i < lin; i++)
         for(int j = 0; j < col; j++){
             int sum1 = 0;
-            for(int k = -1; k <= 1; k++){
+            for(int k = -1; k <= 1; k++)
                 for(int l = -1; l <= 1; l++)
                     sum1 += iImg[i + 1][j + l] * matrix[k + 1][l + 1];
-            }
             oImg[i][j] = sum1 / 9;
         }
 }
 
 // Coloca valores invertidos da matriz imagem output na matriz imagem output
 void negative(tImage iImg, tImage oImg, int lin, int col, int *tone){
-    for (int i = 0; i < lin; i++)
-        for (int j = 0; j < col; j++)
+    for(int i = 0; i < lin; i++)
+        for(int j = 0; j < col; j++)
             oImg[i][j] = *tone - iImg[i][j];
 }
 
@@ -136,7 +135,7 @@ void shade(tImage iImg, tImage oImg, int lin, int col, int shade, std::string *m
         *msg = "escurecida";
         for(int i = 0; i < lin; i++)
             for(int j = 0; j < col; j++)
-                if (iImg[i][j] + shade < 0)
+                if(iImg[i][j] + shade < 0)
                     oImg[i][j] = 0;
                 else
                     oImg[i][j] = iImg[i][j] + shade;
@@ -180,6 +179,6 @@ int flip(tImage iImg, tImage oImg, int lin, int col, int orien, std::string *msg
 // mudanças da imagem de output usam a imagem input como base
 void saveChanges(tImage iImg, tImage oImg, int lin, int col){
     for(int i = 0; i < lin; i++)
-        for (int j = 0; j < col; j++)
+        for(int j = 0; j < col; j++)
             iImg[i][j] = oImg[i][j];
 }
