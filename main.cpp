@@ -46,7 +46,6 @@ int main(){
                     std::cout << error;
                     return 1;
                 }
-                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem rotacionada à " << message << " com sucesso";
                 break;
 
@@ -62,28 +61,24 @@ int main(){
                     std::cout << error;
                     return 1;
                 }
-                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem binarizada com sucesso.";
                 break;
 
             case 2:
                 edited = true;
                 iconize(input_image, output_image, &lines, &columns);
-                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem iconizada com sucesso.";
                 break;
 
             case 3:
                 edited = true;
                 smooth(input_image, output_image, lines, columns);
-                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem suavizada com sucesso.";
                 break;
 
             case 4:
                 edited = true;
                 negative(input_image, output_image, lines, columns, &tone);
-                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem negativada com sucesso.";
                 break;
 
@@ -96,7 +91,6 @@ int main(){
                           << "Mudança desejada: ";
                 std::cin >> shading;
                 shade(input_image, output_image, lines, columns, shading, &message);
-                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem " << message << " com sucesso.";
                 break;
 
@@ -112,7 +106,6 @@ int main(){
                     std::cout << error;
                     return 1;
                 }
-                saveChanges(input_image, output_image, lines, columns);
                 std::cout << "\nImagem invertida " << message << " com sucesso.";
                 break;
 

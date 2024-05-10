@@ -49,6 +49,15 @@ int savePGM(std::string name, tImage oImg, int lin, int col, int tone){
     return 0;
 }
 
+// Salva alterações na imagem de input toda vez que uma alteração for feita na imagem output.
+// Assim é possível fazer várias alterações em sequência, uma vez que nas outras funções as
+// mudanças da imagem de output usam a imagem input como base
+void saveChanges(tImage iImg, tImage oImg, int lin, int col){
+    for(int i = 0; i < lin; i++)
+        for(int j = 0; j < col; j++)
+            iImg[i][j] = oImg[i][j];
+}
+
 // Função que rotaciona os valores da matriz imagem input
 // e coloca suas novas posições na matriz imagen output
 int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir, std::string *msg){
@@ -72,6 +81,7 @@ int rotate(tImage iImg, tImage oImg, int *lin, int *col, int dir, std::string *m
             return 1;
     }
     std::swap(*lin, *col);
+    saveChanges(iImg, oImg, *lin, *col);
     return 0;
 }
 
@@ -90,7 +100,8 @@ int binarize(tImage iImg, tImage oImg, int lin, int col, int dsr_tone){
                     oImg[i][j] = 0;
                 else
                     oImg[i][j] = 255;
-
+    
+    saveChanges(iImg, oImg, lin, col);
     return 0;
 }
 
@@ -106,6 +117,7 @@ void iconize(tImage iImg, tImage oImg, int *lin, int *col){
 
     *lin = 64;
     *col = 64;
+    saveChanges(iImg, oImg, *lin, *col);
 }
 
 // Função que aplica filtro passa-baixa
@@ -120,6 +132,7 @@ void smooth(tImage iImg, tImage oImg, int lin, int col){
                     sum1 += iImg[i + 1][j + l] * matrix[k + 1][l + 1];
             oImg[i][j] = sum1 / 9;
         }
+    saveChanges(iImg, oImg, lin, col);
 }
 
 // Coloca valores invertidos da matriz imagem output na matriz imagem output
@@ -127,6 +140,8 @@ void negative(tImage iImg, tImage oImg, int lin, int col, int *tone){
     for(int i = 0; i < lin; i++)
         for(int j = 0; j < col; j++)
             oImg[i][j] = *tone - iImg[i][j];
+
+    saveChanges(iImg, oImg, lin, col);
 }
 
 // Esclarese ou escurece a imagem de acordo com o que o usuário especifica
@@ -148,6 +163,7 @@ void shade(tImage iImg, tImage oImg, int lin, int col, int shade, std::string *m
                 else
                     oImg[i][j] = iImg[i][j] + shade;
     }
+    saveChanges(iImg, oImg, lin, col);
 }
 
 // Inverte a orientação da imagem verticalmente ou horizontalmente
@@ -171,14 +187,6 @@ int flip(tImage iImg, tImage oImg, int lin, int col, int orien, std::string *msg
             error = "\nErro: Opção inválida\n";
             return 1;
     }
+    saveChanges(iImg, oImg, lin, col);
     return 0;
-}
-
-// Salva alterações na imagem de input toda vez que uma alteração for feita na imagem output.
-// Assim é possível fazer várias alterações em sequência, uma vez que nas outras funções as
-// mudanças da imagem de output usam a imagem input como base
-void saveChanges(tImage iImg, tImage oImg, int lin, int col){
-    for(int i = 0; i < lin; i++)
-        for(int j = 0; j < col; j++)
-            iImg[i][j] = oImg[i][j];
 }
